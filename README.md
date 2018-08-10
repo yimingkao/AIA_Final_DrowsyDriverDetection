@@ -1,10 +1,11 @@
 # AIA_Final_DrowsyDriverDetection
 人工智慧學校的期末專題 - 疲勞駕駛偵測
 
-[資料集](#Dataset)
-[目錄結構](#目錄結構)
++ [資料集](#Dataset)
 
-#Dataset
++ [目錄結構](#目錄結構)
+
+## Dataset
 原先 yawDD 的位置, 助教已經幫忙將檔案放到 server 上 '/projectdata/driver' 上
 ```
 jovyan@jupyter-at072xxx:~$ cd /projectdata/driver
@@ -34,7 +35,7 @@ jovyan@jupyter-at072xxx:at072-group04$ mv mark/*.csv aiaDDD/   (將 mark 檔放�
 jovyan@jupyter-at072xxx:at072-group04$ rm -rf mark mark.zip    (清掉暫存檔. mark 資料夾中有將 mark 的結果視覺化, 可看標的準不準)
 ```
 
-#目錄結構
+# 目錄結構
 下面是指 at072-group04 下面的目錄結構.
 ```
 + at072-group04
@@ -49,4 +50,12 @@ jovyan@jupyter-at072xxx:at072-group04$ rm -rf mark mark.zip    (清掉暫存檔.
                 + roi    (使用選定的 roi 來抽 features)
 ```
         
+# 流程
+我們的處理 pipeline 是
+  - 前處理
+  - 找人臉位置
+  - 抽 feature
+  - Training or Inference
   
+# 嘗試與結果
+  - model1: 直接整張圖抽 features 再 training & inference.
