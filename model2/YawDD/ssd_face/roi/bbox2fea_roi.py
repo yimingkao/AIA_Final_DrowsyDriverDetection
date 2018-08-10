@@ -1,92 +1,71 @@
 
+import os
 import cv2
 import pandas as pd
 import numpy as np
 import re
-import os
+import time
 
-import keras
-from keras.applications.densenet import DenseNet121
-from keras.applications.densenet import preprocess_input as densenet_preproc
-from keras.models import Model
-from keras.layers import Dense
+from dense121_fea_extract import Dense121FeatureExtract
 
 def isMale(name):
     return re.match('[0-9]{1,2}-Male.+', name) != None
 
-# preprocess & convert to RGB arrangement.
-def preprocess_input(x):
-    img = x[:,:,::-1] # opencv BGR -> RGB
-    img = densenet_preproc(img.astype(float))
-    return img
+N_FEATURES = 2048
+extractor = 'dense121'
+featureExtracter = Dense121FeatureExtract(N_FEATURES)
+#video_path = '/projectdata/driver/YawDD/'
+video_path = '../../../../../YawDD/'
 
-video_path = '/projectdata/driver/YawDD/'
-
-N_FEATURES = 8192
-shape_used=(224, 224)
-base_model = DenseNet121(weights='imagenet', include_top=True, 
-                         input_shape=(shape_used[0], shape_used[1], 3))
-base_model.layers.pop()
-x = base_model.layers[-1].output
-features = Dense(N_FEATURES)(x)
-model = Model(input = base_model.input, output = features)
-# We need optimizer even we just want to extract feature.
-opt = keras.optimizers.Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, epsilon=None)
-model.compile(loss='categorical_crossentropy',
-                  optimizer=opt,
-                  metrics=['accuracy'])
-print(model.summary())
-
-prefix = 'dense121_'+str(N_FEATURES)+'_'
-
-for patterns in ['yawn_train', 'yawn_valid', 'yawn_test']: #要產生的 dataset
-
-    data = pd.read_csv('../../'+patterns+'.csv')
+#set_name = 'yawn_train'
+for set_name in ['yawn_train', 'yawn_valid', 'yawn_test']:
+#for set_name in ['yawn_train']:
+    set_path = '../bbox/'+set_name+'/'
+    dst_path = extractor + '_' + str(N_FEATURES) + '_' + set_name + '/'
+    if not os.path.exists(dst_path):
+        os.mkdir(dst_path)
+    
+    data = pd.read_csv('../../'+set_name+'.csv')
     for i in range(len(data)):
-        dstname = prefix+patterns+'/'+data['Name'][i].replace('.avi', '.npy')
-        bboxname = '../bbox/'+patterns+'/'+data['Name'][i].replace('.avi', '.csv')
-        if os.path.exists(dstname):
-            continue
-        src_path = video_path
+        target_path = video_path
         if isMale(data['Name'][i]):
-            src_path += 'Male/'
+            target_path += 'Male/'
         else:
-            src_path += 'Female/'
-        srcname = src_path + data['Name'][i]
-        if not os.path.exists(srcname):
-            continue
-        txtname = srcname.replace('.avi', '_mark.txt')
-        vin = cv2.VideoCapture(srcname)
+            target_path += 'Female/'
+        filename = target_path + data['Name'][i]
+        txtname = filename.replace('.avi', '_mark.txt')
+        vin = cv2.VideoCapture(filename)
         length = int(vin.get(cv2.CAP_PROP_FRAME_COUNT))
-        print('{}: {}'.format(srcname, length))
-        fmark = open(txtname, 'r')
-        degrees = []
-        for j in range(length):
-            degree = fmark.readline()
-            degrees.append(int(degree))
-        fmark.close()
-        cord = pd.read_csv(bboxname)    
-        fea = np.empty(shape=(length,N_FEATURES+1))
+        print('{}: {}'.format(filename, length))
+#        fmark = open(txtname, 'r')
+#        degrees = []
+#        for j in range(length):
+#            degree = fmark.readline()
+#            degrees.append(int(degree))
+#        fmark.close()
+        
+        cord = pd.read_csv(set_path+data['Name'][i].replace('.avi', '.csv'))    
+        fea = np.empty(shape=(length,N_FEATURES))
         for j in range(length):
             ret, frame = vin.read()
             startX = cord['sx'][j] if cord['sx'][j] >= 0 else 0
             startY = cord['sy'][j] if cord['sy'][j] >= 0 else 0
             endX = cord['ex'][j]
-            endY = cord['ey'][j]
+            endY = cord['ey'][j]         
             # Extract features by good model
             # y: 6/12 -> 11/12, use 5/12 region size
             yoff = int((endY-startY)*6/12)
             xoff = int((endX-startX)/4)
             ybot = int((endY-startY)*1/12)
             face_img = frame[startY+yoff:endY-ybot, startX+xoff:endX]
-            face_img = cv2.resize(face_img, shape_used)
-            x_test = np.empty(shape=(1, shape_used[0], shape_used[1], 3))
-            x_test[0,:,:,:] = preprocess_input(face_img)
-            pred = model.predict(x_test)
-            pred = np.append(pred, degrees[j])
+            stime = time.time()        
+            pred = featureExtracter.feature_extract(face_img)
             fea[j,:] = pred
-            print('\r%d'%j, end='')
+            stime = time.time()-stime
+            print('\r%d %ffps'%(j, 1/stime), end='')
+            #if j == 10:
+            #    break
+        #print(fea)
         vin.release()
-        np.save(dstname, fea)
-        print('\n')
+        np.save(dst_path+data['Name'][i].replace('.avi', '.npy'), fea)
         #break

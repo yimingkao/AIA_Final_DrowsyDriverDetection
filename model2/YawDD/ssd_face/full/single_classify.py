@@ -16,12 +16,14 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-setcsv_path = '../../'
+#set_name = 'yawn_train'
+video_path = '../../YawDD/Mirror/'
+faceroi_path = 'ssd_face/'
 N_FEATURES = 512
 
 def feature_load(ext, set_name):
-    npy_path = ext+'_'+str(N_FEATURES)+'_'+set_name+'/'
-    data = pd.read_csv(setcsv_path+set_name+'.csv')
+    npy_path = faceroi_path+ext+'_'+str(N_FEATURES)+'_'+set_name+'/'
+    data = pd.read_csv(video_path+'../'+set_name+'.csv')
     total = 0
     for i in range(len(data)):
         fname = data['Name'][i].replace('.avi', '.npy')
@@ -47,14 +49,14 @@ X_train, y_train = feature_load('dense121', 'yawn_train')
 X_valid, y_valid = feature_load('dense121', 'yawn_valid')
 
 models = [ \
+          ('BaggingRegressor', BaggingRegressor(verbose=True)), \
           ('ExtraTreesRegressor', ExtraTreesRegressor(verbose=True)), \
          ]
-#          ('KNeighborsRegressor', KNeighborsRegressor()), \
+#          ('GradientBoostingRegressor', GradientBoostingRegressor(verbose=True)), \
+ #         ('RandomForestRegressor', RandomForestRegressor(verbose=True, n_jobs=3)), \
+#          ('KNeighborsRegressor', KNeighborsRegressor(n_jobs=3)), \
 #          ('DecisionTreeRegressor', DecisionTreeRegressor()), \
 #          ('AdaBoostRegressor', AdaBoostRegressor()), \
-#          ('BaggingRegressor', BaggingRegressor(verbose=True)), \
-#          ('RandomForestRegressor', RandomForestRegressor(verbose=True))\
-#          ('GradientBoostingRegressor', GradientBoostingRegressor(verbose=True)), \
 
 
 min_score = 1e20
@@ -76,8 +78,8 @@ print(power_df)
 with open('power_best_model.pickle', 'wb') as f:
     pickle.dump(power_best_model, f)
 
-npy_path = 'dense121_512_yawn_test/'
-data = pd.read_csv(setcsv_path+'yawn_test.csv')
+npy_path = faceroi_path+'dense121_512_yawn_test/'
+data = pd.read_csv(video_path+'../yawn_test.csv')
 for i in range(len(data)):
     fname = data['Name'][i].replace('.avi', '.npy')
     fea = np.load(npy_path+fname)

@@ -1,7 +1,7 @@
 
 import pandas as pd
 import numpy as np
-
+import pickle
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -11,7 +11,7 @@ from keras.layers import Dense,GRU
 from keras import optimizers
 
 setcsv_path = '../../'
-N_FEATURES = 8192
+N_FEATURES = 2048
 window_size = 14
 
 def feature_load(ext, set_name):
@@ -71,9 +71,10 @@ def train(ext, train, valid):
     return model
 
 model = train('dense121', 'yawn_train', 'yawn_valid')
-#model.save('dense121_yawn_train.h5')
-npy_path = 'dense121_8192_yawn_test/'
+#model.save('dense121_2048_yawn_train.h5')
+npy_path = 'dense121_2048_yawn_test/'
 data = pd.read_csv(setcsv_path+'yawn_test.csv')
+history = []
 for i in range(len(data)):
     fname = data['Name'][i].replace('.avi', '.npy')
     fea = np.load(npy_path+fname)
@@ -90,9 +91,11 @@ for i in range(len(data)):
         pred = np.append(pred, o)
         loss += (o - y[j])**2
     loss /= len(X)
+    history.append([pred, loss])
     plt.figure(figsize=(16,7))
     plt.plot(axisx, y, label='golden')
     plt.plot(axisx, pred, label='prediction')
+    plt.title('loss: %f'%loss)
     plt.legend()
     plt.tight_layout()
     plt.ylabel('degree')
@@ -102,3 +105,6 @@ for i in range(len(data)):
     plt.close()
     print('%d/%d: '%(i, len(data)), fname.replace('.npy', '.png') + " saved!")
     #break
+    
+with open('gru_'+npy_path.replace('/','.pickle'), 'wb') as f:
+    pickle.dump(history, f)
