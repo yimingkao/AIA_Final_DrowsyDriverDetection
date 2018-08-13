@@ -10,6 +10,9 @@ import matplotlib.pyplot as plt
 from keras.models import Sequential
 from keras.layers import Dense, LSTM, GRU
 from keras import optimizers
+from keras.callbacks import EarlyStopping
+from keras.callbacks import ModelCheckpoint
+
 
 import config
 
@@ -20,7 +23,8 @@ video_path = config.video_path
 setcsv_path = '../../'
 
 window_size = 14
-epoch_cnt = 20
+epoch_cnt = 100
+n_patience = 15
 batch_size = 32
 NN_MODEL = LSTM #GRU
 
@@ -63,7 +67,8 @@ def window_data(data, label, window_size):
 # param[in] ext (string) The feature extractor name
 # param[in] train (list) The list of strings contains the sets used as training data.
 # param[in] valid (string) The validation set name.
-def train(ext, trains, valid):
+# param[in] save (string) The save filename includes path of model
+def train(ext, trains, valid, save):
     X_train_raw, y_train_raw = feature_Label_load(ext, trains[0])
     for train in trains[1:]:
         X_load, y_load = feature_Label_load(ext, train)
@@ -82,15 +87,21 @@ def train(ext, trains, valid):
     model.add(NN_MODEL(512, input_shape=(window_size, N_FEATURES)))
     model.add(Dense(1))
     print(model.summary())
-    opt = optimizers.Adam(clipvalue=5)
+    opt = optimizers.Adam(clipvalue=5)   
     model.compile(loss='mean_squared_error',
                  optimizer=opt,
                  metrics=['mae'])
-    model.fit(X_train, y_train, batch_size=batch_size, epochs=epoch_cnt, validation_data=(X_valid, y_valid))
+    checkpoint = ModelCheckpoint(save, monitor='val_loss', verbose=1,
+                                 save_best_only=True)
+    earlystop = EarlyStopping(monitor='val_loss', patience=n_patience, verbose=1)
+    model.fit(X_train, y_train, batch_size=batch_size, epochs=epoch_cnt,
+              validation_data=(X_valid, y_valid),
+              callbacks=[checkpoint, earlystop])
     return model
 
-model = train(extractor, ['train'], 'test')
-model.save(extractor+'_'+str(N_FEATURES)+'_train.h5')
+model_name = extractor+'_'+str(N_FEATURES)+'_train.h5'
+model = train(extractor, ['train'], 'test', model_name)
+#model.save(extractor+'_'+str(N_FEATURES)+'_train.h5')
 # dump test set.
 npy_path = extractor+'_'+str(N_FEATURES)+'_test/'
 dst_path = 'res_' + npy_path
