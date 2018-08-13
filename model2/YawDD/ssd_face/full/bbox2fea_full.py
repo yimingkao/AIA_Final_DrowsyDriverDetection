@@ -6,16 +6,15 @@ import numpy as np
 import re
 import time
 
-from dense121_fea_extract import Dense121FeatureExtract
+import config
 
 def isMale(name):
     return re.match('[0-9]{1,2}-Male.+', name) != None
 
-N_FEATURES = 512
-extractor = 'dense121'
-featureExtracter = Dense121FeatureExtract(N_FEATURES)
-#video_path = '/projectdata/driver/YawDD/'
-video_path = '../../../../../YawDD/'
+N_FEATURES = config.N_FEATURES
+extractor = config.extractor
+featureExtracter = config.featureExtracter
+video_path = config.video_path
 
 #set_name = 'yawn_train'
 for set_name in ['yawn_train', 'yawn_valid', 'yawn_test']:
@@ -27,21 +26,19 @@ for set_name in ['yawn_train', 'yawn_valid', 'yawn_test']:
     data = pd.read_csv('../../'+set_name+'.csv')
     for i in range(len(data)):
         target_path = video_path
+        txt_path = '../../../../YawDD/'
         if isMale(data['Name'][i]):
             target_path += 'Male/'
+            txt_path += 'Male/'
         else:
             target_path += 'Female/'
+            txt_path += 'Female/'
         filename = target_path + data['Name'][i]
-        txtname = filename.replace('.avi', '_mark.txt')
+        # using the updated dataset marker
+        txtname = txt_path + data['Name'][i].replace('.avi', '_mark.txt')
         vin = cv2.VideoCapture(filename)
         length = int(vin.get(cv2.CAP_PROP_FRAME_COUNT))
         print('{}: {}'.format(filename, length))
-#        fmark = open(txtname, 'r')
-#        degrees = []
-#        for j in range(length):
-#            degree = fmark.readline()
-#            degrees.append(int(degree))
-#        fmark.close()
         
         cord = pd.read_csv(set_path+data['Name'][i].replace('.avi', '.csv'))    
         fea = np.empty(shape=(length,N_FEATURES))
