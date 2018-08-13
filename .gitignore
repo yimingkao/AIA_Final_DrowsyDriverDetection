@@ -31,4 +31,12 @@ dense121_1024_test
 dense121_1024_train
 dense121_2048_test
 dense121_2048_train
-
+dense121_512_train.h5
+dense121_1024_train.h5
+dense121_2048_train.h5
+lstm_dense121_512_test.pickle
+lstm_dense121_1024_test.pickle
+lstm_dense121_2048_test.pickle
+res_dense121_512_test
+res_dense121_1024_test
+res_dense121_2048_test
