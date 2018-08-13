@@ -1,4 +1,4 @@
-
+import os
 import pandas as pd
 import numpy as np
 import re
@@ -11,19 +11,20 @@ from keras.models import Sequential
 from keras.layers import Dense, LSTM, GRU
 from keras import optimizers
 
-def isMale(name):
-    return re.match('[0-9]{1,2}-Male.+', name) != None
+import config
 
-#video_path = '/projectdata/driver/YawDD/'
-#video_path = '../../../../../YawDD/'
-video_path = '../../../../../aiaDDD/videos/'
+N_FEATURES = config.N_FEATURES
+extractor = config.extractor
+video_path = config.video_path
+
 setcsv_path = '../../'
-N_FEATURES = 2048
-extractor = 'dense121'
+
 window_size = 14
+epoch_cnt = 20
+batch_size = 32
 NN_MODEL = LSTM #GRU
 
-def feature_load(ext, set_name):
+def feature_Label_load(ext, set_name):
     npy_path = ext+'_'+str(N_FEATURES)+'_'+set_name+'/'
     data = pd.read_csv(setcsv_path+set_name+'.csv')
     total = 0
@@ -31,7 +32,6 @@ def feature_load(ext, set_name):
         fname = data['Name'][i].replace('.avi', '.npy')
         fea = np.load(npy_path+fname)
         total += fea.shape[0]
-        #break
     print(total)
     X = np.empty(shape=(total, N_FEATURES))
     y = np.empty(shape=(total))
@@ -69,10 +69,17 @@ def window_data(data, label, window_size):
     assert len(X) == len(y)
     return X, y
 
-def train(ext, train, valid):
-    X_train_raw, y_train_raw = feature_load(ext, train)
+# param[in] ext (string) The feature extractor name
+# param[in] train (list) The list of strings contains the sets used as training data.
+# param[in] valid (string) The validation set name.
+def train(ext, trains, valid):
+    X_train_raw, y_train_raw = feature_Label_load(ext, trains[0])
+    for train in trains[1:]:
+        X_load, y_load = feature_Label_load(ext, train)
+        X_train_raw = np.concatenate((X_train_raw, X_load), axis=0)
+        y_train_raw = np.concatenate((y_train_raw, y_load))
     X_train, y_train = window_data(X_train_raw, y_train_raw, window_size)
-    X_valid_raw, y_valid_raw = feature_load(ext, valid)
+    X_valid_raw, y_valid_raw = feature_Label_load(ext, valid)
     X_valid, y_valid = window_data(X_valid_raw, y_valid_raw, window_size)
     X_train = np.array(X_train)
     y_train = np.array(y_train)
@@ -88,19 +95,18 @@ def train(ext, train, valid):
     model.compile(loss='mean_squared_error',
                  optimizer=opt,
                  metrics=['mae'])
-    model.fit(X_train, y_train, batch_size=32, epochs=20, validation_data=(X_valid, y_valid))
+    model.fit(X_train, y_train, batch_size=batch_size, epochs=epoch_cnt, validation_data=(X_valid, y_valid))
     return model
 
-model = train(extractor, 'yawn_train', 'yawn_train')
+model = train(extractor, ['train'], 'train')
 model.save(extractor+'_'+str(N_FEATURES)+'_yawn_train.h5')
-npy_path = extractor+'_'+str(N_FEATURES)+'_yawn_train/'
-data = pd.read_csv(setcsv_path+'yawn_train.csv')
+npy_path = extractor+'_'+str(N_FEATURES)+'_train/'
+data = pd.read_csv(setcsv_path+'_train.csv')
 history = []
 for i in range(len(data)):
     fname = data['Name'][i].replace('.avi', '.npy')
     fea = np.load(npy_path+fname)
     X = fea[:,:N_FEATURES]
-    y = fea[:,N_FEATURES]
     X, y = window_data(X, y, window_size)
     X = np.array(X)
     y = np.array(y)
@@ -125,7 +131,6 @@ for i in range(len(data)):
     plt.clf()
     plt.close()
     print('%d/%d: '%(i, len(data)), fname.replace('.npy', '.png') + " saved!")
-    #break
     
 with open('lstm_'+npy_path.replace('/','.pickle'), 'wb') as f:
     pickle.dump(history, f)

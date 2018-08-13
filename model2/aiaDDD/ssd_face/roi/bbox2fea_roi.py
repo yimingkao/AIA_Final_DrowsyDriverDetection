@@ -6,17 +6,16 @@ import numpy as np
 import re
 import time
 
-from dense121_fea_extract import Dense121FeatureExtract
+import config
 
-N_FEATURES = 2048
-extractor = 'dense121'
-featureExtracter = Dense121FeatureExtract(N_FEATURES)
-#video_path = '/projectdata/driver/YawDD/'
-video_path = '../../../../../aiaDDD/videos/'
+N_FEATURES = config.N_FEATURES
+extractor = config.extractor
+featureExtracter = config.featureExtracter
+video_path = config.video_path
 
 #set_name = 'yawn_train'
-#for set_name in ['train', 'test']:
-for set_name in ['train']:
+for set_name in ['train', 'test']:
+#for set_name in ['train']:
     set_path = '../../'
     dst_path = extractor + '_' + str(N_FEATURES) + '_' + set_name + '/'
     if not os.path.exists(dst_path):
