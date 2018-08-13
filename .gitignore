@@ -25,6 +25,10 @@ lstm_dense121_1024_yawn_test.pickle
 lstm_dense121_1024_yawn_valid.pickle
 lstm_dense121_2048_yawn_test.pickle
 lstm_dense121_2048_yawn_valid.pickle
+cmp_dense121_yawn_test
+cmp_dense121_yawn_valid
+yawn_test_cmp.csv
+yawn_valid_cmp.csv
 dense121_512_test
 dense121_512_train
 dense121_1024_test
@@ -40,3 +44,5 @@ lstm_dense121_2048_test.pickle
 res_dense121_512_test
 res_dense121_1024_test
 res_dense121_2048_test
+cmp_dense121_test
+
