@@ -72,8 +72,15 @@ def window_data(data, label, window_size):
     assert len(X) == len(y)
     return X, y
 
-def train(ext, train, valid):
-    X_train_raw, y_train_raw = feature_Label_load(ext, train)
+# param[in] ext (string) The feature extractor name
+# param[in] train (list) The list of strings contains the sets used as training data.
+# param[in] valid (string) The validation set name.
+def train(ext, trains, valid):
+    X_train_raw, y_train_raw = feature_Label_load(ext, trains[0])
+    for train in trains[1:]:
+        X_load, y_load = feature_Label_load(ext, train)
+        X_train_raw = np.concatenate((X_train_raw, X_load), axis=0)
+        y_train_raw = np.concatenate((y_train_raw, y_load))
     X_train, y_train = window_data(X_train_raw, y_train_raw, window_size)
     X_valid_raw, y_valid_raw = feature_Label_load(ext, valid)
     X_valid, y_valid = window_data(X_valid_raw, y_valid_raw, window_size)
@@ -94,7 +101,7 @@ def train(ext, train, valid):
     model.fit(X_train, y_train, batch_size=batch_size, epochs=epoch_cnt, validation_data=(X_valid, y_valid))
     return model
 
-model = train(extractor, 'yawn_train', 'yawn_valid')
+model = train(extractor, ['yawn_train'], 'yawn_valid')
 model.save(extractor+'_'+str(N_FEATURES)+'_yawn_train.h5')
 
 for set_name in ['yawn_valid', 'yawn_test']:
