@@ -9,10 +9,10 @@ from ssd_face_det import SSDFaceDet
 def isMale(name):
     return re.match('[0-9]{1,2}-Male.+', name) != None
 
-video_path = '../'
+video_path = '/projectdata/driver/YawDD/'
 faceDet = SSDFaceDet()
 
-data = pd.read_csv(video_path+'yawn_train.csv')
+data = pd.read_csv('../yawn_train.csv')
 for i in range(len(data)):
     target_path = video_path
     if isMale(data['Name'][i]):
