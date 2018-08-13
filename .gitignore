@@ -25,3 +25,10 @@ lstm_dense121_1024_yawn_test.pickle
 lstm_dense121_1024_yawn_valid.pickle
 lstm_dense121_2048_yawn_test.pickle
 lstm_dense121_2048_yawn_valid.pickle
+dense121_512_test
+dense121_512_train
+dense121_1024_test
+dense121_1024_train
+dense121_2048_test
+dense121_2048_train
+
