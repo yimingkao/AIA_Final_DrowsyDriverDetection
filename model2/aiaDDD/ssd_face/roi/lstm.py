@@ -40,19 +40,10 @@ def feature_Label_load(ext, set_name):
         fname = data['Name'][i].replace('.avi', '.npy')
         fea = np.load(npy_path+fname)
         X[idx:idx+fea.shape[0],:] = fea[:,:N_FEATURES]
-        mark_path = video_path
-        if isMale(fname):
-            mark_path += 'Male/'
-        else:
-            mark_path += 'Female/'
-        mark_name = mark_path + data['Name'][i].replace('.avi', '_mark.txt')
-        fmark = open(mark_name, 'r')
-        degrees = np.empty(shape=fea.shape[0])
-        for j in range(fea.shape[0]):
-            degree = fmark.readline()
-            degrees[j] = int(degree)
-        fmark.close()
-        
+        mark_path = '../../../../aiaDDD/markers/'
+        mark_name = mark_path + data['Name'][i].replace('.avi', '.csv')
+        mark = pd.read_csv(mark_name)
+        degrees = mark['yawn'].values
         y[idx:idx+fea.shape[0]] = degrees[:]
         idx += fea.shape[0]
         #break;
@@ -98,15 +89,26 @@ def train(ext, trains, valid):
     model.fit(X_train, y_train, batch_size=batch_size, epochs=epoch_cnt, validation_data=(X_valid, y_valid))
     return model
 
-model = train(extractor, ['train'], 'train')
-model.save(extractor+'_'+str(N_FEATURES)+'_yawn_train.h5')
-npy_path = extractor+'_'+str(N_FEATURES)+'_train/'
-data = pd.read_csv(setcsv_path+'_train.csv')
+model = train(extractor, ['train'], 'test')
+model.save(extractor+'_'+str(N_FEATURES)+'_train.h5')
+# dump test set.
+npy_path = extractor+'_'+str(N_FEATURES)+'_test/'
+dst_path = 'res_' + npy_path
+if not os.path.exists(dst_path):
+    os.mkdir(dst_path)
+    
+data = pd.read_csv(setcsv_path+'test.csv')
 history = []
 for i in range(len(data)):
     fname = data['Name'][i].replace('.avi', '.npy')
     fea = np.load(npy_path+fname)
     X = fea[:,:N_FEATURES]
+
+    mark_path = '../../../../aiaDDD/markers/'
+    mark_name = mark_path + data['Name'][i].replace('.avi', '.csv')
+    mark = pd.read_csv(mark_name)
+    y = mark['yawn'].values
+
     X, y = window_data(X, y, window_size)
     X = np.array(X)
     y = np.array(y)
@@ -127,7 +129,7 @@ for i in range(len(data)):
     plt.tight_layout()
     plt.ylabel('degree')
     plt.xlabel('Frames')
-    plt.savefig(fname.replace('.npy', '.png'))
+    plt.savefig(dst_path+fname.replace('.npy', '.png'))
     plt.clf()
     plt.close()
     print('%d/%d: '%(i, len(data)), fname.replace('.npy', '.png') + " saved!")
