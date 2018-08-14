@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 #import config
 
 extractors = ['dense121', 'mobilenet']
+features = [512, 1024, 2048]
+#features = [512]
 window_size = 14
 
 for set_name in ['test']:
@@ -15,7 +17,6 @@ for set_name in ['test']:
     if not os.path.exists(dst_path):
         os.mkdir(dst_path)
     data = []
-    features = [512, 1024, 2048]
     for extractor in extractors:
         for n_features in features:
             with open('lstm_'+extractor+'_'+str(n_features)+'_'+set_name+'.pickle', 'rb') as f:
