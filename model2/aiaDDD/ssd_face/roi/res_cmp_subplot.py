@@ -9,6 +9,9 @@ import matplotlib.pyplot as plt
 
 extractor = 'dense121'
 window_size = 14
+fig_row = 3
+fig_col = 2
+fig_cnt = fig_row * fig_col
 
 for set_name in ['test']:
     dst_path = 'cmp_'+extractor+'_'+set_name+'/'
@@ -21,6 +24,7 @@ for set_name in ['test']:
             data.append(pickle.load(f))
     
     history = []
+    pic = 0
     for i in range(len(data[0])):
         fname = data[0][i][2]
         mark_path = '../../../../aiaDDD/markers/'
@@ -28,8 +32,11 @@ for set_name in ['test']:
         mark = pd.read_csv(mark_name)
         y = mark['yawn'].values
         y = y[window_size:]
+        nth_pic = pic % fig_cnt
+        if nth_pic == 0:
+            plt.figure(figsize=(16,7))
+        plt.subplot(fig_row,fig_col,nth_pic+1)
         axisx = [i for i in range(len(y))]
-        plt.figure(figsize=(16,7))
         plt.plot(axisx, y, label='golden')
         entry = [fname]
         for j in range(len(features)):
@@ -37,14 +44,21 @@ for set_name in ['test']:
             plt.plot(axisx, data[j][i][0], label=label)
             entry.extend(data[j][i][1][0])
         history.append(entry)
+        plt.title(fname)
         plt.legend()
         plt.tight_layout()
         plt.ylabel('degree')
         plt.xlabel('Frames')
-        plt.savefig(dst_path+fname.replace('.avi', '.png'))
-        plt.clf()
-        plt.close()
         print('%d/%d: '%(i, len(data[0])), fname.replace('.avi', '.png') + " saved!")
+        
+        if nth_pic == fig_cnt-1:
+            plt.savefig(dst_path+'plots_'+str(int(pic/fig_cnt))+'.png')
+            plt.close()
+        pic += 1
+    if nth_pic != fig_cnt-1:
+        plt.savefig(dst_path+'plots_'+str(int(pic/fig_cnt))+'.png')
+        plt.close()
+        
     #print(history)
     col_name = ['name']
     for j in range(len(features)):

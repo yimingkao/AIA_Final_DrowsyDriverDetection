@@ -45,4 +45,8 @@ res_dense121_512_test
 res_dense121_1024_test
 res_dense121_2048_test
 cmp_dense121_test
+test_cmp.csv
+lstm_mobilenet_1024_test.pickle
+lstm_mobilenet_2048_test.pickle
+lstm_mobilenet_512_test.pickle
 
