@@ -1,4 +1,5 @@
 
+import os
 import pandas as pd
 import numpy as np
 import re
@@ -6,37 +7,41 @@ import pickle
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-
 from keras.models import load_model
-def isMale(name):
-    return re.match('[0-9]{1,2}-Male.+', name) != None
 
-#video_path = '/projectdata/driver/YawDD/'
-video_path = '../../../../../YawDD/'
+import config
+
+N_FEATURES = config.N_FEATURES
+extractor = config.extractor
+video_path = config.video_path
+
 setcsv_path = '../../'
-N_FEATURES = 2048
-extractor = 'dense121'
+
 window_size = 14
 
-def feature_load(ext, fname, npy_path):
-    # X
-    fea = np.load(npy_path+fname)
-    X = np.empty(shape=(fea.shape[0], N_FEATURES))
-    X = fea[:,:N_FEATURES]
-    
-    # y
-    y = np.empty(shape=(fea.shape[0]))
-    mark_path = video_path
-    if isMale(fname):
-        mark_path += 'Male/'
-    else:
-        mark_path += 'Female/'
-    mark_name = mark_path + data['Name'][i].replace('.avi', '_mark.txt')
-    fmark = open(mark_name, 'r')
-    for j in range(fea.shape[0]):
-        degree = fmark.readline()
-        y[j] = int(degree)
-    fmark.close()
+def feature_Label_load(ext, set_name):
+    npy_path = ext+'_'+str(N_FEATURES)+'_'+set_name+'/'
+    data = pd.read_csv(setcsv_path+set_name+'.csv')
+    total = 0
+    for i in range(len(data)):
+        fname = data['Name'][i].replace('.avi', '.npy')
+        fea = np.load(npy_path+fname)
+        total += fea.shape[0]
+    print(total)
+    X = np.empty(shape=(total, N_FEATURES))
+    y = np.empty(shape=(total))
+    idx = 0
+    for i in range(len(data)):
+        fname = data['Name'][i].replace('.avi', '.npy')
+        fea = np.load(npy_path+fname)
+        X[idx:idx+fea.shape[0],:] = fea[:,:N_FEATURES]
+        mark_path = '../../../../aiaDDD/markers/'
+        mark_name = mark_path + data['Name'][i].replace('.avi', '.csv')
+        mark = pd.read_csv(mark_name)
+        degrees = mark['yawn'].values
+        y[idx:idx+fea.shape[0]] = degrees[:]
+        idx += fea.shape[0]
+        #break;
     return X, y
 
 def window_data(data, label, window_size):
@@ -50,19 +55,34 @@ def window_data(data, label, window_size):
     assert len(X) == len(y)
     return X, y
 
-model = load_model(extractor+'_'+str(N_FEATURES)+'_yawn_train.h5')
-npy_path = extractor+'_'+str(N_FEATURES)+'_yawn_train/'
-data = pd.read_csv(setcsv_path+'yawn_train.csv')
+#model = train(extractor, ['train'], 'test', model_name)
+model = load_model(extractor+'_'+str(N_FEATURES)+'_train.h5')
+# dump test set.
+npy_path = extractor+'_'+str(N_FEATURES)+'_test/'
+dst_path = 'res_' + npy_path
+if not os.path.exists(dst_path):
+    os.mkdir(dst_path)
+    
+data = pd.read_csv(setcsv_path+'test.csv')
 history = []
 for i in range(len(data)):
     fname = data['Name'][i].replace('.avi', '.npy')
-    X, y = feature_load(extractor, fname, npy_path)
+    fea = np.load(npy_path+fname)
+    X = fea[:,:N_FEATURES]
+
+    mark_path = '../../../../aiaDDD/markers/'
+    mark_name = mark_path + data['Name'][i].replace('.avi', '.csv')
+    mark = pd.read_csv(mark_name)
+    y = mark['yawn'].values
+
     X, y = window_data(X, y, window_size)
     X = np.array(X)
     y = np.array(y)
     axisx = [i for i in range(len(X))]
     pred = np.array([])
     loss = 0
+    print(X.shape)
+    print(X[0].shape)
     for j in range(len(X)):
         o = model.predict(X[j:j+1])
         pred = np.append(pred, o)
@@ -77,11 +97,10 @@ for i in range(len(data)):
     plt.tight_layout()
     plt.ylabel('degree')
     plt.xlabel('Frames')
-    plt.savefig(fname.replace('.npy', '.png'))
+    plt.savefig(dst_path+fname.replace('.npy', '.png'))
     plt.clf()
     plt.close()
     print('%d/%d: '%(i, len(data)), fname.replace('.npy', '.png') + " saved!")
-    #break
     
-with open('lstm_'+npy_path.replace('/','.pickle'), 'wb') as f:
+with open('lstm_'+npy_path.replace('/','.pickle.inf'), 'wb') as f:
     pickle.dump(history, f)
