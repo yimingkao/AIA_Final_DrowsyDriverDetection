@@ -1,6 +1,8 @@
 .DS_Store
 __pycache__
 .ipynb_checkpoints
+deploy.prototxt.txt
+res10_300x300_ssd_iter_140000.caffemodel
 dense121_512_yawn_train.h5
 dense121_1024_yawn_train.h5
 dense121_2048_yawn_train.h5
@@ -60,10 +62,10 @@ lstm_mobilecus_512_test.pickle
 res_dense121_512_test
 res_dense121_1024_test
 res_dense121_2048_test
-cmp_dense121_test
 res_mobilenet_512_test
 res_mobilenet_1024_test
 res_mobilenet_2048_test
-cmp_mobilenet_test
 res_mobilecus_512_test
+cmp_dense121_test
+cmp_mobilenet_test
 test_cmp.csv
