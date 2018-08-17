@@ -84,6 +84,7 @@ for i in range(len(data)):
     print(X.shape)
     print(X[0].shape)
     for j in range(len(X)):
+        print(X[j:j+1].shape)
         o = model.predict(X[j:j+1])
         pred = np.append(pred, o)
         loss += (o - y[j])**2

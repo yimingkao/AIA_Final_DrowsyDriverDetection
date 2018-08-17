@@ -20,6 +20,8 @@ class MobileNetFeatureExtract(object):
         x = base_model.layers[-1].output
         features = Dense(n_features)(x)
         self.model = Model(input = base_model.input, output = features)
+        for layer in self.model.layers:
+            layer.Trainable = False
         # We need optimizer even we just want to extract feature.
         opt = keras.optimizers.Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, epsilon=None)
         self.model.compile(loss='categorical_crossentropy',

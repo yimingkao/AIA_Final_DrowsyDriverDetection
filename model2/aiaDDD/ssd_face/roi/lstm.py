@@ -23,7 +23,7 @@ video_path = config.video_path
 setcsv_path = '../../'
 
 window_size = 14
-epoch_cnt = 100
+epoch_cnt = 150
 n_patience = 15
 batch_size = 32
 NN_MODEL = LSTM #GRU
@@ -91,12 +91,13 @@ def train(ext, trains, valid, save):
     model.compile(loss='mean_squared_error',
                  optimizer=opt,
                  metrics=['mae'])
-    checkpoint = ModelCheckpoint(save, monitor='val_loss', verbose=1,
-                                 save_best_only=True)
+#    checkpoint = ModelCheckpoint(save, monitor='val_loss', verbose=1,
+#                                 save_best_only=True)
     earlystop = EarlyStopping(monitor='val_loss', patience=n_patience, verbose=1)
     model.fit(X_train, y_train, batch_size=batch_size, epochs=epoch_cnt,
               validation_data=(X_valid, y_valid),
-              callbacks=[checkpoint, earlystop])
+#              callbacks=[checkpoint, earlystop])
+              callbacks=[earlystop])
     return model
 
 model_name = extractor+'_'+str(N_FEATURES)+'_train.h5'
@@ -126,6 +127,8 @@ for i in range(len(data)):
     axisx = [i for i in range(len(X))]
     pred = np.array([])
     loss = 0
+    print(X.shape)
+    print(X[0].shape)
     for j in range(len(X)):
         o = model.predict(X[j:j+1])
         pred = np.append(pred, o)
