@@ -5,8 +5,12 @@ import keras
 from keras.models import load_model
 from keras.utils.generic_utils import CustomObjectScope
 from keras.applications.mobilenet import preprocess_input as mobilenet_preproc
+# Server
 from keras.applications.mobilenet import relu6
 from keras.applications.mobilenet import DepthwiseConv2D
+# PC (Keras2.2)
+#from keras_applications.mobilenet import relu6
+#from keras.layers import DepthwiseConv2D
 from keras.models import Model
 from keras.layers import Dense
 
