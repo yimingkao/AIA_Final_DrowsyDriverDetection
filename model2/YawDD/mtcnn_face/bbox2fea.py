@@ -65,5 +65,5 @@ for set_name in ['yawn_train', 'yawn_valid', 'yawn_test']:
         #print(fea)
         vin.release()
         np.save(dst_path+data['Name'][i].replace('.avi', '.npy'), fea)
-        break
-    break
+        #break
+    #break
