@@ -3,6 +3,12 @@ __pycache__
 .ipynb_checkpoints
 deploy.prototxt.txt
 res10_300x300_ssd_iter_140000.caffemodel
+deg0
+deg1
+deg2
+deg3
+deg4
+deg5
 dense121_512_yawn_train.h5
 dense121_1024_yawn_train.h5
 dense121_2048_yawn_train.h5
