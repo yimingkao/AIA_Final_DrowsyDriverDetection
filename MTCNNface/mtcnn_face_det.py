@@ -8,7 +8,7 @@ from MTCNN.mtcnn_model import P_Net, R_Net, O_Net
 class MTCNNFaceDet(object):
     def __init__(self):
         thresh = [0.9, 0.6, 0.7]
-        min_face_size = 24
+        min_face_size = 150
         stride = 2
         slide_window = False
         detectors = [None, None, None]
