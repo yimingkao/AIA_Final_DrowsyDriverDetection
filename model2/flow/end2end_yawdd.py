@@ -21,13 +21,13 @@ model = load_model('mobilecus_'+str(N_FEATURES)+'_train.h5')
 
 video_path = '/projectdata/driver/YawDD/'
 #marker_path = '../../YawDD/'
-cord_path = '../YawDD/ssd_face/bbox/'
+cord_prefix = '../YawDD/ssd_face/bbox/'
 
 #check_set = 'yawn_valid'
 for check_set in ['yawn_test', 'yawn_valid']:
     files = pd.read_csv('../YawDD/'+check_set+'.csv')
     file_list = files['Name'].values
-    cord_path = cord_path + check_set + '/'
+    cord_path = cord_prefix + check_set + '/'
     for fname in file_list:
         frames = 0
         fin = np.empty(shape=(window_size,N_FEATURES))
