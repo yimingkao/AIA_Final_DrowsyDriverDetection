@@ -12,6 +12,7 @@ from sklearn.model_selection import train_test_split
 from keras.applications.mobilenet import MobileNet
 from keras.applications.mobilenet import preprocess_input as mobilenet_preproc
 
+n_features = 512
 
 def preprocess_input(x):
     img = x[:,:,::-1]
@@ -48,7 +49,7 @@ def custom_model():
     model.add(Conv2D(128, (3, 3), padding='same'))
     model.add(Activation('relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dense(512, activation='softmax'))
+    model.add(Dense(n_features, activation='softmax'))
     model.add(Flatten())
     model.add(Dense(6, activation='softmax'))
     opt = keras.optimizers.Adam()
@@ -129,7 +130,8 @@ test_generator = testgen.flow_from_directory(
 #model = custom_model()
 model = mobilenet_model()
 
-checkpoint = ModelCheckpoint('custom.h5', monitor='val_loss',
+
+checkpoint = ModelCheckpoint('mobilecus_fea_'+str(n_features)+'.h5', monitor='val_loss',
                              verbose=1, save_best_only=True)
 earlystop = EarlyStopping(monitor='val_loss', patience=n_patience, verbose=1)
 
