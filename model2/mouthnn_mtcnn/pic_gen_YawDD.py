@@ -2,15 +2,17 @@ import pandas as pd
 import os
 import random
 import cv2
-import time
 import re
+from mtcnn_face_det import MTCNNFaceDet
 
 def isMale(name):
     return re.match('[0-9]{1,2}-Male.+', name) != None
 
+faceDet = MTCNNFaceDet()
+
 mark_path = '../../YawDD/markers/'
 video_path = '/home/jovyan/projectdata/driver/YawDD/'
-bbox_path = '../YawDD/ssd_face/bbox/yawn_train/'
+bbox_path = '../YawDD/mtcnn_face/bbox/'
 
 degree_list = []
 
@@ -65,6 +67,7 @@ idx_5 = 0 # current index of num5
 cnt_0 = 0 # current counter of degree0
 cnt_5 = 0 # current counter of degree5
 for entry in degree_list:
+    faceDet.reset()
     fname = entry[0]
     target = video_path
     if isMale(fname):
@@ -78,21 +81,7 @@ for entry in degree_list:
     bbox = pd.read_csv(bbox_path+fname.replace('.avi', '.csv'))
     for i in range(length):
         ret, frame = vin.read()
-        # Extract features by good model
-        startX = int(bbox['sx'][i])
-        startY = int(bbox['sy'][i])
-        endX = int(bbox['ex'][i])
-        endY = int(bbox['ey'][i])
-        # y: 6/12 -> 11/12, use 5/12 region size
-        yoff = int((endY-startY)*6/12)
-        xoff = int((endX-startX)/4)
-        ybot = int((endY-startY)*1/12)
-        face_img = frame[startY+yoff:endY-ybot, startX+xoff:endX]
-        #face_img = cv2.resize(face_img, (100, 100))
-        #face_img = cv2.cvtColor(face_img, cv2.COLOR_BGR2GRAY)
-        #face_img = clahe.apply(face_img)
         degree = int(marker['yawn'][i]+0.1)
-        dst_path = 'deg'+str(degree)+'/'
         if degree == 0:
             if num0[idx_0] == cnt_0:
                 idx_0 += 1
@@ -106,7 +95,20 @@ for entry in degree_list:
                 cnt_5 += 1
             else:
                 cnt_5 += 1
-                continue            
+                continue
+        line = bbox.iloc[j].values
+        sx = int(line[1])
+        sy = int(line[2])
+        ex = int(line[3])
+        ey = int(line[4])
+        bw = ex - sx
+        bh = ey - sy
+        if bw == 0 or bh == 0:
+            continue
+        line = line[5:]
+        sx, sy, ex, ey = faceDet.landmark2mouth(line, bw, bh)
+        face_img = frame[sy:ey, sx:ex]
+        dst_path = 'deg'+str(degree)+'/'
         cv2.imwrite(dst_path+fname.replace('.avi', '_%d.jpg'%i), face_img)
         print('\r%d'%i, end='')
     #break
