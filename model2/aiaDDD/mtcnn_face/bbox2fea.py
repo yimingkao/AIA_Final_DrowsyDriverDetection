@@ -32,6 +32,7 @@ for set_name in ['train', 'test']:
 
         cord = pd.read_csv('bbox/'+data['Name'][i].replace('.avi', '.csv'))    
         fea = np.empty(shape=(length,N_FEATURES))
+        index = 0
         for j in range(length):
             ret, frame = vin.read()
             line = cord.iloc[j].values
@@ -45,9 +46,11 @@ for set_name in ['train', 'test']:
             face_img = frame[sy:ey, sx:ex]
             stime = time.time()        
             pred = featureExtractor.feature_extract(face_img)
-            fea[j,:] = pred
+            fea[index,:] = pred
+            index += 1
             stime = time.time()-stime
             print('\r%d %ffps'%(j, 1/stime), end='')
+        fea = fea[:index]
         vin.release()
         np.save(dst_path+data['Name'][i].replace('.avi', '.npy'), fea)
         #break
