@@ -71,11 +71,11 @@ cnt_5 = 0 # current counter of degree5
 for entry in degree_list:
     faceDet.reset()
     fname = entry[0]
-    vin = cv2.VideoCapture(video_path + fname)
+    vin = cv2.VideoCapture(video_path + fname.replace('.csv', '.avi'))
     length = int(vin.get(cv2.CAP_PROP_FRAME_COUNT))
     print('{}: {}'.format(fname, length))
     marker = pd.read_csv(mark_path+fname)
-    bbox = pd.read_csv(bbox_path+fname.replace('.avi', '.csv'))
+    bbox = pd.read_csv(bbox_path+fname)
     for i in range(length):
         ret, frame = vin.read()
         degree = int(marker['yawn'][i]+0.1)
@@ -93,7 +93,7 @@ for entry in degree_list:
             else:
                 cnt_5 += 1
                 continue
-        line = cord.iloc[j].values
+        line = bbox.iloc[j].values
         sx = int(line[1])
         sy = int(line[2])
         ex = int(line[3])
@@ -106,7 +106,7 @@ for entry in degree_list:
         sx, sy, ex, ey = faceDet.landmark2mouth(line, bw, bh)
         face_img = frame[sy:ey, sx:ex]
         dst_path = 'deg'+str(degree)+'/'
-        cv2.imwrite(dst_path+fname.replace('.avi', '_%d.jpg'%i), face_img)
+        cv2.imwrite(dst_path+fname.replace('.csv', '_%d.jpg'%i), face_img)
         print('\r%d'%i, end='')
-    break
+    #break
     
