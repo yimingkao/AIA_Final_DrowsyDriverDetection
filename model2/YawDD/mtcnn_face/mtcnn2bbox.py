@@ -36,7 +36,7 @@ for set_name in ['yawn_train', 'yawn_valid', 'yawn_test']:
             startX, startY, endX, endY, lms = faceDet.faceFind(frame)
             ostr = '%d,%d,%d,%d,%d'%(j,startX,startY,endX,endY)
             for l in range(5):
-                ostr += ',%d,%d'%(str(lms[0]), str(lms[1]))
+                ostr += ','+str(lms[0])+','+str(lms[1])
                 lms = lms[2:]
             fout.write(ostr+'\n')
             print('\r%d'%j,end='')            
