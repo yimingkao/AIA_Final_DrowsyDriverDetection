@@ -28,7 +28,7 @@ def predictor(vstop, predQ, faceQ):
     #featureExtractor = Dense121FeatureExtract(N_FEATURES)
     #featureExtractor = MobileNetFeatureExtract(N_FEATURES)
     featureExtractor = MobileNetCustomFeatureExtract(N_FEATURES)
-    model = load_model('mobilenet_'+str(N_FEATURES)+'_train.h5')
+    model = load_model('mobilecus_'+str(N_FEATURES)+'_train.h5')
     tracker = cv2.TrackerMedianFlow_create()
     
     frames = 0
