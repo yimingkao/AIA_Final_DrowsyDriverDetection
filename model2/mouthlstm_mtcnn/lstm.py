@@ -22,7 +22,7 @@ n_patience = 15
 batch_size = 32
 NN_MODEL = LSTM #GRU
 
-def feature_Label_load(ext, set_name, mark_path):
+def feature_Label_load(ext, set_name, mark_path, bbox_path):
     npy_path = ext+'_'+str(N_FEATURES)+'_'+set_name+'/'
     data = pd.read_csv(set_name+'.csv')
     total = 0
@@ -40,8 +40,15 @@ def feature_Label_load(ext, set_name, mark_path):
         X[idx:idx+fea.shape[0],:] = fea[:,:N_FEATURES]
         mark_name = mark_path + data['Name'][i].replace('.avi', '.csv')
         mark = pd.read_csv(mark_name)
+        # The bbox might has empty record at beginning lines so we have to check!
+        bbox_name = bbox_path + data['Name'][i].replace('.avi', '.csv')
+        bbox = pd.read_csv(bbox_name)
+        lx3 = bbox['lx3'].values
+        for j in range(len(lx3)):
+            if lx3[j] != 0:
+                break
         degrees = mark['yawn'].values
-        y[idx:idx+fea.shape[0]] = degrees[:]
+        y[idx:idx+fea.shape[0]] = degrees[j:]
         idx += fea.shape[0]
         #break;
     return X, y
@@ -58,17 +65,19 @@ def window_data(data, label, window_size):
     return X, y
 
 # param[in] ext (string) The feature extractor name
-# param[in] train (list) The list of strings contains the sets used as training data.
-# param[in] valid (string) The validation set name.
+# param[in] trains (list) The list of strings contains the sets used as training data.
+# param[in] tpaths (list) The list of strings contains the path of sets
+# param[in] bpaths (list) The list of strings contains the path of bounding boxes.
+# param[in] valid (list) The validation set name, path, bounding boxes
 # param[in] save (string) The save filename includes path of model
-def train(ext, trains, tpaths, valid, vpath, save):
-    X_train_raw, y_train_raw = feature_Label_load(ext, trains[0], tpaths[0])
+def train(ext, trains, tpaths, bpaths, valid, save):
+    X_train_raw, y_train_raw = feature_Label_load(ext, trains[0], tpaths[0], bpaths[0])
     for idx, train in enumerate(trains[1:]):
-        X_load, y_load = feature_Label_load(ext, train, tpaths[idx+1])
+        X_load, y_load = feature_Label_load(ext, train, tpaths[idx+1], bpaths[idx+1])
         X_train_raw = np.concatenate((X_train_raw, X_load), axis=0)
         y_train_raw = np.concatenate((y_train_raw, y_load))
     X_train, y_train = window_data(X_train_raw, y_train_raw, window_size)
-    X_valid_raw, y_valid_raw = feature_Label_load(ext, valid, vpath)
+    X_valid_raw, y_valid_raw = feature_Label_load(ext, valid[0], valid[1], valid[2])
     X_valid, y_valid = window_data(X_valid_raw, y_valid_raw, window_size)
     X_train = np.array(X_train)
     y_train = np.array(y_train)
@@ -96,8 +105,9 @@ def train(ext, trains, tpaths, valid, vpath, save):
 model_name = extractor+'_'+str(N_FEATURES)+'_train.h5'
 model = train(extractor,
               ['train', 'yawn_train'], 
-              ['../../aiaDDD/markers/', '../../YawDD/markers/'], 
-              'test', '../../aiaDDD/markers/',
+              ['../../aiaDDD/markers/', '../../YawDD/markers/'],
+              ['../aiaDDD/mtcnn_face/bbox/', '../YawDD/mtcnn_face/bbox/'],
+              ['test', '../../aiaDDD/markers/', '../aiaDDD/mtcnn_face/bbox/'],
               model_name)
 
 # dump test set.
