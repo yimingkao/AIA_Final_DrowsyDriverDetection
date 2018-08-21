@@ -14,11 +14,6 @@ from keras.applications.mobilenet import preprocess_input as mobilenet_preproc
 
 n_features = 512
 
-def preprocess_input(x):
-    img = x[:,:,::-1]
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    return img
-
 def copy_pictures():
     for i in range(6):
         src = 'deg%d/'%i
@@ -82,7 +77,7 @@ def mobilenet_model():
 
 
 
-copy_pictures()
+#copy_pictures()
 #shape_used = (100, 100)
 shape_used = (224, 224)
 epochs = 300
