@@ -1,8 +1,13 @@
+# global usage
 .DS_Store
 __pycache__
 .ipynb_checkpoints
+
+# SSD face detection
 deploy.prototxt.txt
 res10_300x300_ssd_iter_140000.caffemodel
+
+# folders to train mouthnn (mouth feature extractor)
 deg0
 deg1
 deg2
@@ -11,6 +16,8 @@ deg4
 deg5
 train
 test
+
+# YawDD temporary folders and training result
 dense121_512_yawn_train.h5
 dense121_1024_yawn_train.h5
 dense121_2048_yawn_train.h5
@@ -23,25 +30,24 @@ dense121_1024_yawn_train
 dense121_2048_yawn_test
 dense121_2048_yawn_valid
 dense121_2048_yawn_train
-res_dense121_512_yawn_test
-res_dense121_512_yawn_valid
-res_dense121_1024_yawn_test
-res_dense121_1024_yawn_valid
-res_dense121_2048_yawn_test
-res_dense121_2048_yawn_valid
+mobilecus_512_yawn_test
+mobilecus_512_yawn_valid
+mobilecus_512_yawn_train
 cmp_dense121_yawn_test
 cmp_dense121_yawn_valid
 yawn_test_cmp.csv
 yawn_valid_cmp.csv
+
+# aiaDDD temporary folders and training result
+dense121_512_train.h5
+dense121_1024_train.h5
+dense121_2048_train.h5
 dense121_512_test
 dense121_512_train
 dense121_1024_test
 dense121_1024_train
 dense121_2048_test
 dense121_2048_train
-dense121_512_train.h5
-dense121_1024_train.h5
-dense121_2048_train.h5
 mobilenet_512_test
 mobilenet_512_train
 mobilenet_1024_test
@@ -54,13 +60,5 @@ mobilenet_2048_train.h5
 mobilecus_512_test
 mobilecus_512_train
 mobilenet_custom_512.h5
-res_dense121_512_test
-res_dense121_1024_test
-res_dense121_2048_test
-res_mobilenet_512_test
-res_mobilenet_1024_test
-res_mobilenet_2048_test
-res_mobilecus_512_test
 cmp_dense121_test
 cmp_mobilenet_test
-test_cmp.csv
