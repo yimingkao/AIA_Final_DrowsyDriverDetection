@@ -1,1 +1,1 @@
-../aiaDDD/ssd_face/roi/dense121_fea_extract.py
+../../feaExtract/dense121_fea_extract.py

@@ -9,6 +9,8 @@ deg2
 deg3
 deg4
 deg5
+train
+test
 dense121_512_yawn_train.h5
 dense121_1024_yawn_train.h5
 dense121_2048_yawn_train.h5

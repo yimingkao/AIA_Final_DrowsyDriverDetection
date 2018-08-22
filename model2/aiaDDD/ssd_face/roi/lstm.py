@@ -91,13 +91,13 @@ def train(ext, trains, valid, save):
     model.compile(loss='mean_squared_error',
                  optimizer=opt,
                  metrics=['mae'])
-#    checkpoint = ModelCheckpoint(save, monitor='val_loss', verbose=1,
-#                                 save_best_only=True)
+    checkpoint = ModelCheckpoint(save, monitor='val_loss', verbose=1,
+                                 save_best_only=True)
     earlystop = EarlyStopping(monitor='val_loss', patience=n_patience, verbose=1)
     model.fit(X_train, y_train, batch_size=batch_size, epochs=epoch_cnt,
               validation_data=(X_valid, y_valid),
-#              callbacks=[checkpoint, earlystop])
-              callbacks=[earlystop])
+              callbacks=[checkpoint, earlystop])
+#              callbacks=[earlystop])
     return model
 
 model_name = extractor+'_'+str(N_FEATURES)+'_train.h5'

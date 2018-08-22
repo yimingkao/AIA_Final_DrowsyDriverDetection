@@ -1,1 +1,1 @@
-../aiaDDD/ssd_face/roi/mobilenet_fea_extract.py
+../../feaExtract/mobilenet_fea_extract.py
