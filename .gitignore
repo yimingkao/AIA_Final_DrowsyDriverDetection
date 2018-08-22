@@ -29,12 +29,6 @@ res_dense121_1024_yawn_test
 res_dense121_1024_yawn_valid
 res_dense121_2048_yawn_test
 res_dense121_2048_yawn_valid
-lstm_dense121_512_yawn_test.pickle
-lstm_dense121_512_yawn_valid.pickle
-lstm_dense121_1024_yawn_test.pickle
-lstm_dense121_1024_yawn_valid.pickle
-lstm_dense121_2048_yawn_test.pickle
-lstm_dense121_2048_yawn_valid.pickle
 cmp_dense121_yawn_test
 cmp_dense121_yawn_valid
 yawn_test_cmp.csv
@@ -60,13 +54,6 @@ mobilenet_2048_train.h5
 mobilecus_512_test
 mobilecus_512_train
 mobilenet_custom_512.h5
-lstm_dense121_512_test.pickle
-lstm_dense121_1024_test.pickle
-lstm_dense121_2048_test.pickle
-lstm_mobilenet_512_test.pickle
-lstm_mobilenet_1024_test.pickle
-lstm_mobilenet_2048_test.pickle
-lstm_mobilecus_512_test.pickle
 res_dense121_512_test
 res_dense121_1024_test
 res_dense121_2048_test
