@@ -67,3 +67,10 @@ mouthnnym_512_train
 mobilenet_custom_512.h5
 cmp_dense121_test
 cmp_mobilenet_test
+
+# mouthnn result (mouthnn/, mouthnn_mtcnn/)
+mobilecus_fea_512.h5 
+
+# lstm result (mouthlstm/, mouthlstm_mtcnn/)
+mobilecus_512_train.h5
+
