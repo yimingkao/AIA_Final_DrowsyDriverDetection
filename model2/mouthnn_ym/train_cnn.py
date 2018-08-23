@@ -8,8 +8,8 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import time
 
-def conv_layer_build(x_tensor, num, scope):
-    x1 = tf.layers.conv2d(x_tensor, 32, kernel_size=(3,3), strides=(2,2),
+def conv_layer_build(x_tensor, num, kernel, scope):
+    x1 = tf.layers.conv2d(x_tensor, num, kernel_size=kernel, strides=(2,2),
                           name=scope)
     x1 = tf.contrib.layers.batch_norm(x1, 
                                       center=True, scale=True, 
@@ -50,9 +50,9 @@ def ym_batch_generator(samples, shapes, n_features, batch_size):
 
 N_FEATURES = 512
 shape_used = (100, 100)
-epochs = 200
-batch_size = 32
-n_patience = 20
+epochs = 500
+batch_size = 256
+n_patience = 50
 
 f = open('../mouthnn_mtcnn/right_features.pickle', 'rb')
 samples = pickle.load(f)
@@ -72,25 +72,29 @@ y_true = tf.placeholder(dtype=tf.float32,
                         shape=[None, N_FEATURES],
                         name='y_true')
 
-x1 = conv_layer_build(input_data, 32, 'conv1')
-x2 = conv_layer_build(x1, 32, 'conv2')
-x3 = conv_layer_build(x2, 64, 'conv3')
-x4 = conv_layer_build(x2, 64, 'conv4')
-x5 = conv_layer_build(x2, 128, 'conv5')
-flatten = tf.layers.flatten(x5)
-y_pred = tf.layers.dense(flatten, N_FEATURES, name='output')# output layer
+x1 = conv_layer_build(input_data, 32, (3,3), 'conv1')
+x2 = conv_layer_build(x1, 32, (3,3), 'conv2')
+x3 = conv_layer_build(x2, 64, (3,3), 'conv3')
+x4 = conv_layer_build(x3, 64, (3,3), 'conv4')
+x5 = conv_layer_build(x4, 128, (3,3), 'conv5')
+#x6 = conv_layer_build(x5, 128, (2,2), 'conv6')
+#flatten = tf.layers.flatten(x5)
+#y_pred = tf.layers.dense(flatten, N_FEATURES, name='output')# output layer
+y_pred = tf.layers.flatten(x5)# output layer
+print(y_pred.shape)
 #loss = tf.losses.mean_squared_error(y_true, y_pred)
 y_true_log = tf.log(y_true*y_true+1e-6)
 y_pred_log = tf.log(y_pred*y_pred+1e-6)
 loss = tf.losses.absolute_difference(y_true_log, y_pred_log)
 #loss = tf.losses.mean_squared_error(y_true_log, y_pred_log)
-opt = tf.train.AdamOptimizer()
+opt = tf.train.AdamOptimizer(learning_rate = 5e-5)
 update = opt.minimize(loss)
 
 init = tf.global_variables_initializer()
 saver = tf.train.Saver()
 sess = tf.Session()
-sess.run(init)
+#sess.run(init)
+saver.restore(sess, 'mouthnnym_saved/mouthnn_ym.ckpt')
 
 train_loss = []
 patience = 0
@@ -110,7 +114,7 @@ for i in range(epochs):
         epoch_loss += loss_batch
         etime = time.time()
         if etime - stime > 1:
-            print('\r%d/%d loss %.5f, ETA %d seconds'%(j, upd_per_epoch, epoch_loss / (j+1),
+            print('\r%3d: %d/%d loss %.5f, ETA %d seconds'%(i, j, upd_per_epoch, epoch_loss / (j+1),
                                              int((upd_per_epoch - j) / (j+1) * (etime - btime))), end='')
             stime = time.time()
     train_loss.append(epoch_loss / upd_per_epoch)

@@ -30,8 +30,12 @@ class MouthnnYMFeatureExtract(object):
         x3 = conv_layer_build(x2, 64, self.is_training, 'conv3')
         x4 = conv_layer_build(x3, 64, self.is_training, 'conv4')
         x5 = conv_layer_build(x4, 128, self.is_training, 'conv5')
-        flatten = tf.layers.flatten(x5)
-        self.y_pred = tf.layers.dense(flatten, n_features, name='output')# output layer
+        #x6 = conv_layer_build(x5, 128, self.is_training, 'conv5')
+        #flatten = tf.layers.flatten(x5)
+        #self.fea = tf.layers.dense(flatten, n_features, name='fea_out')# output layer
+        #y_pred = tf.layers.dense(self.fea, 1, name='output')
+        self.fea = tf.layers.flatten(x5)
+
         saver = tf.train.Saver()
         self.sess = tf.Session()
         saver.restore(self.sess, 'mouthnnym_saved/mouthnn_ym.ckpt')
@@ -53,7 +57,7 @@ class MouthnnYMFeatureExtract(object):
         img = cv2.resize(img, (100, 100))
         xtest = np.empty(shape=(1, 100, 100, 1))
         xtest[0,:,:,:] = self.preprocess(img)
-        pred = self.sess.run([self.y_pred], feed_dict={
+        pred = self.sess.run([self.fea], feed_dict={
             self.input_data: xtest,
             self.is_training: False
         })

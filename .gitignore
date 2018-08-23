@@ -72,6 +72,7 @@ cmp_mobilenet_test
 mobilecus_fea_512.h5 
 mouthnnym_fea_512.h5
 
-# lstm result (mouthlstm/, mouthlstm_mtcnn/)
+# lstm result (mouthlstm/, mouthlstm_mtcnn/, mouthlstm_ym/)
 mobilecus_512_train.h5
+mouthnnym_512_train.h5
 
