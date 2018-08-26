@@ -20,7 +20,8 @@ def ym_preproc(img):
     return img
 
 def conv_layer_build(tensor, num):
-    tensor = Conv2D(num, kernel_size=(3, 3), strides=(2,2), padding='same')(tensor)
+    #tensor = Conv2D(num, kernel_size=(3, 3), strides=(2,2), padding='same')(tensor)
+    tensor = Conv2D(num, kernel_size=(3, 3), strides=(2,2))(tensor)
     tensor = BatchNormalization()(tensor)
     tensor = Activation('relu')(tensor)
     return tensor
@@ -28,11 +29,13 @@ def conv_layer_build(tensor, num):
 def custom_model_1st(in_shape, n_features):              
     tin = Input(shape=(in_shape))
     tensor = conv_layer_build(tin, 32)
+    tensor = conv_layer_build(tensor, 32)
     tensor = conv_layer_build(tensor, 64)
     tensor = conv_layer_build(tensor, 64)
     tensor = conv_layer_build(tensor, 128)
-    tensor = Flatten()(tensor)
-    fea_out = Dense(n_features)(tensor)
+    #tensor = Flatten()(tensor)
+    #fea_out = Dense(n_features)(tensor)
+    fea_out = Flatten()(tensor)
     y_pred = Dense(1)(fea_out)
     model = Model(inputs=tin, outputs=y_pred)
     opt = keras.optimizers.Adam()
@@ -96,7 +99,7 @@ test_generator = testgen.flow_from_directory(
     shuffle=True,
     seed=42)
 
-model = custom_model((shape_used[0], shape_used[1], 1), n_features)
+model = custom_model_1st((shape_used[0], shape_used[1], 1), n_features)
 
 
 checkpoint = ModelCheckpoint('mouthnnym_fea_'+str(n_features)+'.h5', monitor='val_loss',

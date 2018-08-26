@@ -15,7 +15,8 @@ def conv_layer_build(x_tensor, num, kernel, scope):
                                       center=True, scale=True, 
                                       is_training=is_training,
                                       scope=scope+'_bn')
-    x1 = tf.nn.relu(x1, name=scope+'_relu')
+    #x1 = tf.nn.relu(x1, name=scope+'_relu')
+    x1 = tf.nn.tanh(x1, name=scope+'_tanh')
     return x1
 
 # samples in [[fname, features]] format
@@ -36,6 +37,7 @@ def ym_batch_generator(samples, shapes, n_features, batch_size):
         y_train[i] = samples[i][1]
         if i % 1000 == 0:
             print('%d images prepared!'%i)
+    #print(np.min(y_train), np.max(y_train))
     while True:
         X_batch, y_batch = shuffle(X_train, y_train)
         X_batch = X_batch[:batch_size]
@@ -50,9 +52,9 @@ def ym_batch_generator(samples, shapes, n_features, batch_size):
 
 N_FEATURES = 512
 shape_used = (100, 100)
-epochs = 500
-batch_size = 256
-n_patience = 50
+epochs = 5000
+batch_size = 512
+n_patience = 100
 
 f = open('../mouthnn_mtcnn/right_features.pickle', 'rb')
 samples = pickle.load(f)
@@ -81,13 +83,12 @@ x5 = conv_layer_build(x4, 128, (3,3), 'conv5')
 #flatten = tf.layers.flatten(x5)
 #y_pred = tf.layers.dense(flatten, N_FEATURES, name='output')# output layer
 y_pred = tf.layers.flatten(x5)# output layer
-print(y_pred.shape)
-#loss = tf.losses.mean_squared_error(y_true, y_pred)
-y_true_log = tf.log(y_true*y_true+1e-6)
-y_pred_log = tf.log(y_pred*y_pred+1e-6)
-loss = tf.losses.absolute_difference(y_true_log, y_pred_log)
+loss = tf.losses.mean_squared_error(y_true, y_pred)
+#y_true_log = tf.log(y_true*y_true+1e-6)
+#y_pred_log = tf.log(y_pred*y_pred+1e-6)
+#loss = tf.losses.absolute_difference(y_true_log, y_pred_log)
 #loss = tf.losses.mean_squared_error(y_true_log, y_pred_log)
-opt = tf.train.AdamOptimizer(learning_rate = 5e-5)
+opt = tf.train.AdamOptimizer(learning_rate = 1e-4)
 update = opt.minimize(loss)
 
 init = tf.global_variables_initializer()
@@ -99,7 +100,8 @@ saver.restore(sess, 'mouthnnym_saved/mouthnn_ym.ckpt')
 train_loss = []
 patience = 0
 upd_per_epoch = int(train_size / batch_size)+1
-best_loss = float('inf')
+#best_loss = float('inf')
+best_loss = 0.160053
 for i in range(epochs):
     epoch_loss = 0
     btime = time.time()
