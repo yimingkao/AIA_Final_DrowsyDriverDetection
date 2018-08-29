@@ -121,7 +121,7 @@ def train_with_model(model_used, nth, nth_loss, nth_acc):
         zca_whitening=False)
     
     valid_generator = validgen.flow_from_directory(
-        directory='valid/',
+        directory='test/',
         target_size=shape_used,
         batch_size=batch_size,
         class_mode="categorical",
