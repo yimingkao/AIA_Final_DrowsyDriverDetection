@@ -1,6 +1,7 @@
 import cv2
 import os
 import numpy as np
+from shutil import copyfile
 
 import keras
 from keras.preprocessing.image import ImageDataGenerator#, img_to_array, array_to_img
@@ -12,6 +13,46 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint
 from sklearn.model_selection import train_test_split
 
 n_features = 512
+
+def copy_pictures():
+    for i in range(2):
+        src = '%d/'%i
+        for root,subdir,files in os.walk(src):
+            X_train, X_test = train_test_split(files, test_size=0.2, 
+                                               random_state=1234,
+                                               shuffle=True)
+            dataset = [X_train, X_test]
+            idx = 0
+            for sets in ['train', 'test']:
+                dst = sets+'/%d/'%i
+                if not os.path.exists(dst):
+                    os.mkdir(dst)
+                for file in dataset[idx]:
+                    copyfile(src+file, dst+file)
+                idx += 1
+                
+def dup_pictures():
+    for cset in ['train', 'test']:
+        dirs = [cset+'/0/', cset+'/1/']
+        count = [0, 0]
+        for idx, d in enumerate(dirs):
+            for root,subdir,files in os.walk(d):
+                count[idx] = len(files)
+        print(count)
+        copy_list = []
+        for idx,subdir,files in os.walk(dirs[1]):
+            copy_list = files
+        mult = int(count[0] / count[1])
+        print('copy %d times needed!'%mult)
+        for i in range(mult):
+            print('copy for %d ...'%i)
+            for f in copy_list:
+                copyfile(dirs[1]+f, dirs[1]+'%d_'%i+f)
+        for idx, d in enumerate(dirs):
+            for root,subdir,files in os.walk(d):
+                count[idx] = len(files)
+        print(count)
+    
 
 def ym_preproc(img):
     img = img.astype('float')
@@ -36,10 +77,10 @@ def custom_model_1st(in_shape, n_features):
     #tensor = Flatten()(tensor)
     #fea_out = Dense(n_features)(tensor)
     fea_out = Flatten()(tensor)
-    y_pred = Dense(1)(fea_out)
+    y_pred = Dense(1, activation='sigmoid')(fea_out)
     model = Model(inputs=tin, outputs=y_pred)
     opt = keras.optimizers.Adam()
-    model.compile(loss='mean_squared_error',
+    model.compile(loss='binary_crossentropy', #loss='mean_squared_error',
                   optimizer=opt,
                   metrics=['accuracy'])
     print(model.summary())
@@ -48,7 +89,7 @@ def custom_model_1st(in_shape, n_features):
 def custom_model(in_shape, n_features):              
     model = load_model('mouthnnym_fea_'+str(n_features)+'.h5')
     opt = keras.optimizers.Adam(lr=1e-4)
-    model.compile(loss='mean_squared_error',
+    model.compile(loss='binary_crossentropy', #loss='mean_squared_error',
                   optimizer=opt,
                   metrics=['accuracy'])
     print(model.summary())
@@ -56,8 +97,12 @@ def custom_model(in_shape, n_features):
 
 shape_used = (100, 100)
 epochs = 300
-batch_size = 32
+batch_size = 128
 n_patience = 30
+
+#copy_pictures()
+#dup_pictures()
+
 
 traingen = ImageDataGenerator(
     preprocessing_function = ym_preproc,
@@ -70,12 +115,12 @@ traingen = ImageDataGenerator(
     zca_whitening=False)
             
 train_generator = traingen.flow_from_directory(
-    directory='../mouthnn_mtcnn/train/',
+    directory='./train/',
     target_size=shape_used,
     color_mode='grayscale',
     batch_size=batch_size,
-    #class_mode="categorical",
-    class_mode='sparse',
+    class_mode="binary",
+    #class_mode='sparse',
     shuffle=True,
     seed=42)
 
@@ -90,12 +135,12 @@ testgen = ImageDataGenerator(
     zca_whitening=False)
 
 test_generator = testgen.flow_from_directory(
-    directory='../mouthnn_mtcnn/test/',
+    directory='./test/',
     target_size=shape_used,
     color_mode='grayscale',
     batch_size=batch_size,
-    #class_mode="categorical",
-    class_mode='sparse',
+    class_mode="binary",
+    #class_mode='sparse',
     shuffle=True,
     seed=42)
 

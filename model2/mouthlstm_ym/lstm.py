@@ -8,7 +8,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 from keras.models import Sequential
-from keras.layers import Dense, LSTM, GRU
+from keras.layers import Dense, LSTM, GRU, Bidirectional
 from keras import optimizers
 from keras.callbacks import EarlyStopping
 from keras.callbacks import ModelCheckpoint
@@ -86,7 +86,8 @@ def train(ext, trains, tpaths, bpaths, valid, save):
     #print(X_train, y_train)
     
     model = Sequential()
-    model.add(NN_MODEL(512, input_shape=(window_size, N_FEATURES)))
+    #model.add(NN_MODEL(512, input_shape=(window_size, N_FEATURES)))
+    model.add(Bidirectional(NN_MODEL(128), input_shape=(window_size, N_FEATURES)))
     model.add(Dense(1))
     print(model.summary())
     opt = optimizers.Adam(clipvalue=5)   
