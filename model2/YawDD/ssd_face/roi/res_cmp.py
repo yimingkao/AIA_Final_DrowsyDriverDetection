@@ -15,6 +15,11 @@ def isMale(name):
 extractor = 'dense121'
 video_path = '../../../../../YawDD/'
 
+fig_row = 3
+fig_col = 2
+fig_cnt = fig_row * fig_col
+
+
 for set_name in ['yawn_valid', 'yawn_test']:
     dst_path = 'cmp_'+extractor+'_'+set_name+'/'
     if not os.path.exists(dst_path):
@@ -25,6 +30,7 @@ for set_name in ['yawn_valid', 'yawn_test']:
         with open('lstm_'+extractor+'_'+str(n_features)+'_'+set_name+'.pickle', 'rb') as f:
             data.append(pickle.load(f))
     
+    pic = 0
     history = []
     for i in range(len(data[0])):
         fname = data[0][i][2]
@@ -40,8 +46,11 @@ for set_name in ['yawn_valid', 'yawn_test']:
             degree = fmark.readline()
             y[j] = int(degree)
         fmark.close()
+        nth_pic = pic % fig_cnt
+        if nth_pic == 0:
+            plt.figure(figsize=(16,10))
+        plt.subplot(fig_row,fig_col,nth_pic+1)
         axisx = [i for i in range(len(y))]
-        plt.figure(figsize=(16,7))
         plt.plot(axisx, y, label='golden')
         entry = [fname]
         for j in range(len(features)):
@@ -49,14 +58,20 @@ for set_name in ['yawn_valid', 'yawn_test']:
             plt.plot(axisx, data[j][i][0], label=label)
             entry.extend(data[j][i][1][0])
         history.append(entry)
+        plt.title(fname)
         plt.legend()
         plt.tight_layout()
         plt.ylabel('degree')
         plt.xlabel('Frames')
-        plt.savefig(dst_path+fname.replace('.avi', '.png'))
-        plt.clf()
-        plt.close()
         print('%d/%d: '%(i, len(data[0])), fname.replace('.avi', '.png') + " saved!")
+        if nth_pic == fig_cnt-1:
+            plt.savefig(dst_path+'plots_'+str(int(pic/fig_cnt))+'.png')
+            plt.close()
+        pic += 1
+    if nth_pic != fig_cnt-1:
+        plt.savefig(dst_path+'plots_'+str(int(pic/fig_cnt))+'.png')
+        plt.close()
+
     #print(history)
     col_name = ['name']
     for j in range(len(features)):

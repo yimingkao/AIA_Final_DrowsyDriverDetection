@@ -1,5 +1,16 @@
 # Model1 - 單張直接偵測呵欠程度
 
+| Name | Description |
+| ---- | -------- |
+| pic_gen_YawDD.py |  |
+| yawn_train.csv |  |
+| yawn_test.csv |  |
+| models.py |  |
+| inference.py |  |
+| ymutils.py |  |
+| result |  |
+
+
 ## 流程
 首先先切好 training 以及 testing set 的影片, 利用程式直接根據呵欠程度, 解出一張一張的 jpeg.
 ```

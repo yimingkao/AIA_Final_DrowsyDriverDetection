@@ -18,10 +18,10 @@
 
 # 實驗流程
 
-. 首先先實驗找到人臉之後, 直接抽整張人臉的 feature, 然後送給 LSTM 做 prediction, 但結果不好.
-. 認為可能是因為 training data 不夠, 所以增加 noyawn_train.csv 來增加 training data. 但因為增加的都是沒有打呵欠的影片, 所以效果也差不多.
-. 想過或許可以視為迴歸問題, 以單張的 feature 來丟入 regression model 來 training, 結果更差.
-. 因此開始決定先框出嘴巴區域(根據 SSD face detection 的人臉框取固定比例), 抽完 feature 後再 training, 開始有效果.
-. 因為後續是套用 LSTM 類型的模型來預測呵欠程度, 所以也實驗決定抽多少 features 比較好.
-. MTCNN face detection 可以偵測出左嘴角、右嘴角的特徵點, 以此來框出嘴巴區域會比固定嘴巴位置更為準確, 結果也是這樣.
+- 首先先實驗找到人臉之後, 直接抽整張人臉的 feature, 然後送給 LSTM 做 prediction, 但結果不好.
+- 認為可能是因為 training data 不夠, 所以增加 noyawn_train.csv 來增加 training data. 但因為增加的都是沒有打呵欠的影片, 所以效果也差不多.
+- 想過或許可以視為迴歸問題, 以單張的 feature 來丟入 regression model 來 training, 結果更差.
+- 因此開始決定先框出嘴巴區域(根據 SSD face detection 的人臉框取固定比例), 抽完 feature 後再 training, 開始有效果.
+- 因為後續是套用 LSTM 類型的模型來預測呵欠程度, 所以也實驗決定抽多少 features 比較好.
+- MTCNN face detection 可以偵測出左嘴角、右嘴角的特徵點, 以此來框出嘴巴區域會比固定嘴巴位置更為準確, 結果也是這樣.
 

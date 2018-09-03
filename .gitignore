@@ -36,8 +36,6 @@ mobilecus_512_yawn_train
 mouthnnym_512_yawn_test
 mouthnnym_512_yawn_train
 mouthnnym_512_yawn_valid
-cmp_dense121_yawn_test
-cmp_dense121_yawn_valid
 yawn_test_cmp.csv
 yawn_valid_cmp.csv
 

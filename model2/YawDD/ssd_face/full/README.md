@@ -18,5 +18,12 @@
 ## 操作順序
 
 ```
+$ python bbox2fea_full.py
+$ python lstm.py
+$ python lstm_inference.py (結果不佳)
+$ python lstm_noyawn.py (加入 noyawn 的 training data 之後結果仍然不佳)
+$ python single_classify.py (Regression problem? Give it a try~)
+$ python single_class_balance.py (試著 balance training data)
+$ python single_class_balance_norm.py (加上 min max scalar 再做 regression, 效果不好)
 ```
 
