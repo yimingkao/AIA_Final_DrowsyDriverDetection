@@ -7,9 +7,9 @@ import matplotlib.pyplot as plt
 
 #import config
 
-extractors = ['dense121', 'mobilenet']
-features = [512, 1024, 2048]
-#features = [2048]
+extractors = ['dense121', 'mobilenet', 'mobilecus']
+#features = [512, 1024, 2048]
+features = [512]
 window_size = 14
 fig_row = 3
 fig_col = 2
