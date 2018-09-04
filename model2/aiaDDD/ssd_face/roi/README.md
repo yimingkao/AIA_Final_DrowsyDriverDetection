@@ -27,11 +27,12 @@
 ## 操作順序
 
 ```
-$ python verify.py
+$ python bbroi_check.py
 $ python bbox2fea_roi.py
 $ python lstm.py
 $ python lstm_inference.py
-$ python res_cmp.py
+$ python res_cmp_subplot.py
+$ python fea_cmp_subplot.py
 ```
 
 ## 實驗結果 - 基於 dataset train 完的 mobilenet 最佳.

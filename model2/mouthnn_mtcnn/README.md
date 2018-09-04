@@ -1,25 +1,24 @@
-# Model2 - 多張人臉偵測、特徵擷取、模型判斷.
+# Mouthnn_mtcnn - 基於 YawDD 及 aiaDDD 來找出適合的 mobilenet weighting.
 
-+ [目錄結構](#目錄結構)
+與 Mouthnn 的目的相同, 只是這裡的嘴巴定位是使用 MTCNN, 所以效果應該會更好才對.
 
-+ [流程](#流程)
-
-# 目錄結構
-子目錄包含了資料集、嘴巴特徵抽取訓練、判斷模型的訓練、demo流程四個子目錄.
+## 檔案及目錄
 
 | Name | Description |
 | ---- | -------- |
-| YawDD | Training, Test set, 不同人臉偵測模型下抽取特徵 |
-| aiaDDD | Training, Test set, 不同人臉偵測模型下抽取特徵 |
-| mouthnn | 使用 SSD 找人臉並取固定比例之位置當成嘴巴區域, training mobilenet feature 抽取的能力 |
-| mouthnn_mtcnn | 使用 MTCNN 找人臉並取回傳之特徵點位置, training mobilenet feature 抽取的能力 |
-| mouthnn_ym | 使用 MTCNN 找人臉並取回傳之特徵點位置, 嘗試再縮小 mobilenet 為 customized CNN |
-| mouthlstm | 經由 mouthnn 所抽出之每張 feature 及呵欠程度, 訓練一個判斷模型 |
-| mouthlstm_mtcnn | 同上, 主要使用基於 MTCNN 之結果 |
-| mouthlstm_ym | 同上, 主要使用 customized CNN 的結果 |
-| flow | 應用 mouthlstm 訓練好之模型, 在 aiaDDD/YawDDD 的測試資料集上跑出模擬結果, 以及及時的 demo 流程 |
-| flow_mtcnn | 同上, 主要使用基於 MTCNN 之結果 |
+| MTCNN | MTCNN 的實作 (symbolic link) |
+| mtcnn_face_det.py | mtcnn 找人臉的 class code |
+| pic_gen_aiaDDD.py | 每個檔案去統計每個不同程度的 frame 張數, 最後隨機取一樣多的量來 training. |
+| pic_gen_YawDD.py | 同上. |
+| pic_train.py | 利用產生的圖檔來做後續 training 的動作. |
+| pic_test.py | 存下每個 frame 的 confusion matrix 來驗證 training 結果正確性 |
+| pic2fea.py | 把圖片抽成一個一個 feature, 用來做不一樣的 training. |
 
 
-# 流程
-專案進行中先試作以 SSD 找臉的方式, 預定義人臉嘴巴位置, 在 YawDD (資料集抽features) -> mouthnn (修改 imagenet weighting 變得更好) -> mouthlstm (得到一個 prediction model) -> flow (驗證資料集中 test set 結果及 realtime demo flow) 
+## 執行順序
+'''
+$ python pic_gen_aiaDDD.py (會產生 deg0 ~ deg5 的 folder)
+$ python pic_gen_YawDD.py
+$ python pic_train.py (會把 deg0 ~ deg5 裡面的圖 copy 到 train, test folder 下, 最後 train 出來的結果是 mobilecus_fea_512.h5)
+$ python pic_test.py
+'''
