@@ -11,7 +11,7 @@ extractors = ['dense121', 'mobilenet', 'mobilecus']
 #features = [512, 1024, 2048]
 features = [512]
 window_size = 14
-fig_row = 3
+fig_row = 2
 fig_col = 2
 fig_cnt = fig_row * fig_col
 
@@ -36,7 +36,7 @@ for set_name in ['test']:
         y = y[window_size:]
         nth_pic = pic % fig_cnt
         if nth_pic == 0:
-            plt.figure(figsize=(16,10))
+            plt.figure(figsize=(16,7))
         plt.subplot(fig_row,fig_col,nth_pic+1)
         axisx = [i for i in range(len(y))]
         plt.plot(axisx, y, label='golden')

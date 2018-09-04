@@ -43,12 +43,14 @@ $ python res_cmp.py
 ![1](cmp_dense121_test/plots_1.png)
 ![2](cmp_dense121_test/plots_2.png)
 ![3](cmp_dense121_test/plots_3.png)
+![4](cmp_dense121_test/plots_4.png)
 
 ### Mobilenet
 ![0](cmp_mobilenet_test/plots_0.png)
 ![1](cmp_mobilenet_test/plots_1.png)
 ![2](cmp_mobilenet_test/plots_2.png)
 ![3](cmp_mobilenet_test/plots_3.png)
+![4](cmp_mobilenet_test/plots_4.png)
 
 還是可以使用 512 features.
 
@@ -60,6 +62,7 @@ $ python res_cmp.py
 ![1](cmp_test/plots_1.png)
 ![2](cmp_test/plots_2.png)
 ![3](cmp_test/plots_3.png)
+![4](cmp_test/plots_4.png)
 
 由結果可知, 可以利用 trained mobilenet 來抽 feature, 效果不錯, 同時 model 也比較小.
 
