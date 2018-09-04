@@ -16,9 +16,9 @@
 
 
 ## 執行順序
-'''
+```
 $ python pic_gen_aiaDDD.py (會產生 deg0 ~ deg5 的 folder)
 $ python pic_gen_YawDD.py
 $ python pic_train.py (會把 deg0 ~ deg5 裡面的圖 copy 到 train, test folder 下, 最後 train 出來的結果是 mobilecus_fea_512.h5)
 $ python pic_test.py
-'''
+```
