@@ -22,3 +22,7 @@ $ python pic_gen_YawDD.py
 $ python pic_train.py (會把 deg0 ~ deg5 裡面的圖 copy 到 train, test folder 下, 最後 train 出來的結果是 mobilecus_fea_512.h5)
 $ python pic_test.py
 ```
+## 結果
+Training 完的結果還不錯, customized mobilenet weighting 應有更好表現.
+![train.png](train.png)
+![test.png](test.png)
