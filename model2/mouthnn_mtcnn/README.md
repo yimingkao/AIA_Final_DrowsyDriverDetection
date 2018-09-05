@@ -12,7 +12,7 @@
 | pic_gen_YawDD.py | 同上. |
 | pic_train.py | 利用產生的圖檔來做後續 training 的動作. |
 | pic_test.py | 存下每個 frame 的 confusion matrix 來驗證 training 結果正確性 |
-| pic2fea.py | 把圖片抽成一個一個 feature, 用來做不一樣的 training. |
+| pic2fea.py | 把圖片抽成一個一個 feature, 用來做再對 mobilenet 輕量化 model 的 training. |
 
 
 ## 執行順序
