@@ -23,3 +23,5 @@
 
 # 流程
 專案進行中先試作以 SSD 找臉的方式, 預定義人臉嘴巴位置, 在 YawDD (資料集抽features) -> mouthnn (修改 imagenet weighting 變得更好) -> mouthlstm (得到一個 prediction model) -> flow (驗證資料集中 test set 結果及 realtime demo flow) 
+
+後續又導入了 MTCNN 的人臉偵測, 它同時會給出兩個嘴角的特徵點, 依此去框出嘴巴位置會更為準確, 結果也更好.
