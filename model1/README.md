@@ -2,13 +2,13 @@
 
 | Name | Description |
 | ---- | -------- |
-| pic_gen_YawDD.py |  |
-| yawn_train.csv |  |
-| yawn_test.csv |  |
-| models.py |  |
-| inference.py |  |
-| ymutils.py |  |
-| result |  |
+| pic_gen_YawDD.py | 從 YawDD 中直接根據單張 frame 的呵欠程度來存成不同的 folder |
+| yawn_train.csv | Training set |
+| yawn_test.csv | Testing set |
+| models.py | 用來 training 的檔案 |
+| inference.py | 推論 test set 的結果 |
+| ymutils.py | 一些 utility 跟畫 confusion matrix |
+| result | 結果圖 |
 
 
 ## 流程
